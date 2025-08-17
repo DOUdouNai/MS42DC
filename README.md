@@ -1,4 +1,119 @@
-MS42DC Motor Control with ESP32： 
-This project demonstrates the control of the MS42DC motor using the ESP32 microcontroller via the Arduino IDE. 
-The system supports multiple control modes, including position control, speed control, absolute position control, and torque control.
-基于ArduinoIDE通过ESP32对轮趣的MS42DC电机控制，包含位置，速度，绝对位置以及力矩控制。
+# 实时脊柱姿态可视化系统
+
+这个项目提供了实时可视化脊柱姿态的功能，支持从串口读取IMU数据并实时显示3D脊柱模型。
+
+## 数据格式
+
+输入数据格式为：
+```
+时间戳,IMU1_roll,IMU1_pitch,IMU1_yaw,IMU2_roll,IMU2_pitch,IMU2_yaw,IMU3_roll,IMU3_pitch,IMU3_yaw,IMU4_roll,IMU4_pitch,IMU4_yaw,IMU5_roll,IMU5_pitch,IMU5_yaw
+```
+
+示例：
+```
+23978,128.31,8.54,7.09,81.30,48.27,-30.56,-66.03,10.87,4.84,41.16,50.18,24.40,94.65,-29.76,0.28
+```
+
+## 坐标系统
+
+- **Z轴**：向上，与脊柱轴向一致
+- **X轴**：向前
+- **Y轴**：向左
+
+## 使用方法
+
+### Python版本
+
+1. 安装依赖：
+```bash
+pip install -r requirements.txt
+```
+
+2. 运行可视化程序：
+```bash
+# 快速启动（推荐）
+python run_demo.py
+
+# 或者单独运行：
+# 演示版本（推荐先运行这个测试）
+python spine_demo.py
+
+# 使用动画版本（需要串口数据）
+python spine_realtime.py
+
+# 或使用基础版本
+python spine_visualization.py
+```
+
+### MATLAB版本
+
+1. 在MATLAB中运行：
+```matlab
+spine_visualization
+```
+
+## 功能特性
+
+- **实时显示**：从串口实时读取IMU数据
+- **3D可视化**：显示脊柱的3D姿态
+- **IMU标记**：显示每个IMU的位置
+- **非阻塞**：使用多线程避免界面卡顿
+- **错误处理**：包含串口连接和数据解析错误处理
+- **演示模式**：提供模拟数据演示功能
+
+## 参数设置
+
+### 串口设置
+- COM端口：14
+- 波特率：115200
+- 超时：0.1秒
+
+### 脊柱参数
+- 脊柱总长度：0.4米
+- 每段长度：0.1米
+- 显示范围：±0.3米
+
+## 停止程序
+
+- Python版本：按 `Ctrl+C`
+- MATLAB版本：关闭图形窗口或按 `Ctrl+C`
+
+## 故障排除
+
+1. **串口连接失败**
+   - 检查COM端口号是否正确
+   - 确认串口没有被其他程序占用
+   - 检查波特率设置
+
+2. **数据显示异常**
+   - 检查数据格式是否正确
+   - 确认IMU角度范围是否合理
+   - 检查串口数据是否完整
+
+3. **显示卡顿**
+   - 降低更新频率
+   - 检查系统性能
+   - 关闭其他占用资源的程序
+
+## 技术细节
+
+### 算法流程
+1. 串口数据读取
+2. 数据解析和验证
+3. 欧拉角转旋转矩阵
+4. 脊柱点位置计算
+5. 3D图形更新
+
+### 坐标系转换
+- 使用ZYX欧拉角顺序
+- 旋转矩阵：R = Rz * Ry * Rx
+- 累积旋转计算脊柱各段位置
+
+## 扩展功能
+
+可以考虑添加的功能：
+- 数据记录和回放
+- 姿态角度显示
+- 运动轨迹跟踪
+- 数据滤波
+- 多视角显示
