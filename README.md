@@ -1,4 +1,122 @@
-MS42DC Motor Control with ESP32： 
-This project demonstrates the control of the MS42DC motor using the ESP32 microcontroller via the Arduino IDE. 
-The system supports multiple control modes, including position control, speed control, absolute position control, and torque control.
-基于ArduinoIDE通过ESP32对轮趣的MS42DC电机控制，包含位置，速度，绝对位置以及力矩控制。
+# 机械臂脊柱控制代码
+
+这个项目实现了一个机械臂模仿人体头部向前倾斜的运动控制代码。机械臂会读取当前位置，然后执行一个向前倾斜的弧线运动，模拟人体脊柱的弯曲动作。
+
+## 功能特点
+
+- ✅ 删除IMU相关功能，简化代码结构
+- ✅ 自动读取机械臂当前位置作为起始点
+- ✅ 生成向前倾斜的弧线轨迹
+- ✅ 支持轨迹平滑处理
+- ✅ 可视化轨迹规划结果
+- ✅ 可配置的运动参数
+- ✅ 安全的运动控制（伺服模式）
+
+## 文件结构
+
+```
+├── robot_spine_control.py  # 主控制代码
+├── config.py              # 配置文件
+└── README.md              # 说明文档
+```
+
+## 安装依赖
+
+```bash
+pip install jkrc numpy matplotlib scipy
+```
+
+## 配置参数
+
+在 `config.py` 文件中可以调整以下参数：
+
+### 机器人连接配置
+- `ROBOT_IP`: 机器人IP地址
+
+### 运动参数
+- `TILT_ANGLE`: 倾斜角度（度），默认30度
+- `ARC_RADIUS`: 弧线半径（mm），默认80mm
+- `NUM_POINTS`: 轨迹点数量，默认100个点
+- `SMOOTHING_FACTOR`: 轨迹平滑因子，默认0.1
+
+### 运动速度参数
+- `LINEAR_SPEED`: 直线运动速度（mm/s），默认50
+- `SERVO_FREQUENCY`: 伺服运动频率（秒），默认0.01
+
+### 其他配置
+- `USE_INITIAL_POSITION`: 是否使用预设初始位置
+- `INITIAL_POSITION`: 预设初始位置 [x, y, z, rx, ry, rz]
+- `RETURN_TO_START`: 运动完成后是否返回起始位置
+
+## 使用方法
+
+1. **修改配置**：根据你的机器人设置修改 `config.py` 中的参数
+
+2. **运行代码**：
+   ```bash
+   python robot_spine_control.py
+   ```
+
+3. **观察结果**：
+   - 程序会显示当前TCP位置
+   - 生成并显示轨迹规划图
+   - 执行机械臂运动
+   - 显示最终TCP位置
+
+## 运动原理
+
+### 轨迹生成
+机械臂的运动轨迹基于以下原理：
+- 以当前位置为起始点
+- 在XZ平面上生成弧线（X轴向前，Z轴向下）
+- Y坐标保持不变
+- 绕Y轴旋转实现向前倾斜
+
+### 数学公式
+```
+x = x0 + R * sin(θ)
+z = z0 - R * (1 - cos(θ))
+ry = ry0 + θ
+```
+
+其中：
+- `(x0, y0, z0, rx0, ry0, rz0)` 是起始位置
+- `R` 是弧线半径
+- `θ` 是倾斜角度（从0到目标角度）
+
+## 安全注意事项
+
+1. **确保工作空间安全**：运行前检查机械臂周围是否有障碍物
+2. **速度控制**：可以通过调整 `SERVO_FREQUENCY` 来控制运动速度
+3. **紧急停止**：确保有紧急停止按钮可用
+4. **测试模式**：建议先在仿真环境中测试
+
+## 故障排除
+
+### 常见问题
+
+1. **连接失败**
+   - 检查机器人IP地址是否正确
+   - 确认网络连接正常
+   - 检查机器人是否已开机
+
+2. **运动异常**
+   - 检查初始位置是否合理
+   - 调整弧线半径避免碰撞
+   - 降低运动速度
+
+3. **轨迹生成失败**
+   - 检查起始位置数据是否有效
+   - 调整平滑因子参数
+
+## 扩展功能
+
+可以根据需要扩展以下功能：
+- 添加多种运动模式（左右倾斜、旋转等）
+- 实现实时轨迹调整
+- 添加碰撞检测
+- 支持多段轨迹组合
+
+## 许可证
+
+本项目仅供学习和研究使用。
